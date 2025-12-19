@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safvacut Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Favicon -->
+  <link rel="shortcut icon"
+    href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-ESKwzmjR7tbreApAoFqaXonObbk7qV.png"
+    type="image/png">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Inter', sans-serif;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .admin-card {
+      backdrop-filter: blur(20px);
+      background: rgba(15, 15, 35, 0.8);
+      border: 1px solid rgba(247, 147, 30, 0.2);
+    }
+
+    .btn-admin {
+      background: linear-gradient(135deg, #f7931e 0%, #ff6b35 100%);
+      transition: all 0.3s ease;
+    }
+
+    .btn-admin:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(247, 147, 30, 0.4);
+    }
+
+    .btn-admin:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .input-admin {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(247, 147, 30, 0.3);
+      color: white;
+    }
+
+    .input-admin:focus {
+      border-color: #f7931e;
+      box-shadow: 0 0 0 2px rgba(247, 147, 30, 0.2);
+      outline: none;
+    }
+
+    .input-admin::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .user-card {
+      transition: all 0.3s ease;
+    }
+
+    .user-card:hover {
+      transform: translateY(-2px);
+      border-color: #f7931e;
+    }
+
+    .balance-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(247, 147, 30, 0.5);
+      color: white;
+    }
+
+    .balance-input:focus {
+      border-color: #f7931e;
+      outline: none;
+    }
+
+    .stats-card {
+      background: linear-gradient(135deg, rgba(247, 147, 30, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+
+      .search-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .bulk-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        margin: 0.5rem;
+        max-height: 95vh;
+      }
+
+      .balance-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .header-actions {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="admin-card border-b border-orange-500 border-opacity-20 sticky top-0 z-30">
+    <div class="px-4 sm:px-6 py-4">
+      <div class="header-content flex items-center justify-between">
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <div
+            class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+            <i class="fas fa-shield-alt text-white text-sm sm:text-base"></i>
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-bold">Safvacut Admin</h1>
+            <p class="text-xs sm:text-sm text-gray-400">User Management Panel</p>
+          </div>
+        </div>
+        <div class="header-actions flex items-center space-x-2 sm:space-x-4">
+          <span class="text-xs sm:text-sm text-gray-400 hidden sm:block">
+            Welcome, <span id="admin-username">Admin</span>
+          </span>
+          <button id="logout-btn" class="btn-danger px-3 sm:px-4 py-2 rounded-lg text-white font-medium text-sm">
+            <i class="fas fa-sign-out-alt mr-1 sm:mr-2"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+    <!-- Stats Overview -->
+    <div class="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+      <div class="stats-card admin-card rounded-xl p-4 sm:p-6 text-center">
+        <div class="text-xl sm:text-3xl font-bold mb-1 sm:mb-2" id="total-users">0</div>
+        <div class="text-xs sm:text-sm text-gray-400">Total Users</div>
+      </div>
+      <div class="stats-card admin-card rounded-xl p-4 sm:p-6 text-center">
+        <div class="text-xl sm:text-3xl font-bold mb-1 sm:mb-2" id="total-balance">$0</div>
+        <div class="text-xs sm:text-sm text-gray-400">Total Value</div>
+      </div>
+      <div class="stats-card admin-card rounded-xl p-4 sm:p-6 text-center">
+        <div class="text-xl sm:text-3xl font-bold mb-1 sm:mb-2" id="active-users">0</div>
+        <div class="text-xs sm:text-sm text-gray-400">Active (24h)</div>
+      </div>
+      <div class="stats-card admin-card rounded-xl p-4 sm:p-6 text-center">
+        <div class="text-xl sm:text-3xl font-bold mb-1 sm:mb-2" id="total-transactions">0</div>
+        <div class="text-xs sm:text-sm text-gray-400">Transactions</div>
+      </div>
+    </div>
+
+    <div class="admin-card rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <div class="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 class="text-lg sm:text-xl font-bold">⏳ Pending Transactions</h2>
+        <div class="flex items-center space-x-2">
+          <span id="pending-count"
+            class="bg-yellow-500 bg-opacity-20 text-yellow-500 px-3 py-1 rounded-full text-sm font-medium">0</span>
+          <button id="refresh-pending-btn" class="btn-success px-3 py-1 rounded-lg text-white font-medium text-sm">
+            <i class="fas fa-sync-alt mr-1"></i>Refresh
+          </button>
+        </div>
+      </div>
+
+      <div id="pending-transactions-list" class="space-y-3 sm:space-y-4">
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-clock text-3xl sm:text-4xl mb-4"></i>
+          <p class="text-sm sm:text-base">Loading pending transactions...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Search & Management -->
+    <div class="admin-card rounded-xl p-4 sm:p-6 mb-6 sm:mb-8">
+      <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">User Management</h2>
+
+      <!-- Search Section -->
+      <div class="search-grid grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div>
+          <label class="block text-sm font-medium mb-2">Search by User ID</label>
+          <input type="text" id="search-user-id" class="input-admin w-full p-3 rounded-lg text-sm"
+            placeholder="Enter User ID">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Search by Email</label>
+          <input type="email" id="search-email" class="input-admin w-full p-3 rounded-lg text-sm"
+            placeholder="Enter user email">
+        </div>
+        <div class="flex items-end">
+          <button id="search-user-btn"
+            class="btn-admin px-4 sm:px-6 py-3 rounded-lg text-white font-medium w-full text-sm">
+            <i class="fas fa-search mr-2"></i>Search User
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <button id="load-all-users-btn" class="btn-admin px-3 sm:px-4 py-2 rounded-lg text-white font-medium text-sm">
+          <i class="fas fa-users mr-1 sm:mr-2"></i>
+          <span class="hidden sm:inline">Load All Users</span>
+          <span class="sm:hidden">All Users</span>
+        </button>
+        <button id="refresh-stats-btn" class="btn-success px-3 sm:px-4 py-2 rounded-lg text-white font-medium text-sm">
+          <i class="fas fa-sync-alt mr-1 sm:mr-2"></i>
+          <span class="hidden sm:inline">Refresh Stats</span>
+          <span class="sm:hidden">Refresh</span>
+        </button>
+      </div>
+
+      <!-- User Results -->
+      <div id="user-results" class="space-y-3 sm:space-y-4">
+        <div class="text-center py-8 text-gray-400">
+          <i class="fas fa-search text-3xl sm:text-4xl mb-4"></i>
+          <p class="text-sm sm:text-base">Search for a user to get started</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Operations -->
+    <div class="admin-card rounded-xl p-4 sm:p-6">
+      <h2 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Bulk Operations</h2>
+
+      <div class="bulk-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Add Balance to All Users -->
+        <div class="border border-gray-600 rounded-lg p-4">
+          <h3 class="font-semibold mb-4 text-sm sm:text-base">Add Balance to All Users</h3>
+          <div class="space-y-3">
+            <select id="bulk-asset" class="input-admin w-full p-3 rounded-lg text-sm">
+              <option value="BTC">Bitcoin (BTC)</option>
+              <option value="ETH">Ethereum (ETH)</option>
+              <option value="BNB">BNB (BNB)</option>
+              <option value="USDT">Tether (ERC20)</option>
+              <option value="TRC20">Tether (TRC20)</option>
+              <option value="ADA">Cardano (ADA)</option>
+            </select>
+            <input type="number" id="bulk-amount" class="input-admin w-full p-3 rounded-lg text-sm"
+              placeholder="Amount to add" step="0.00000001">
+            <button id="bulk-add-btn" class="btn-danger w-full py-3 rounded-lg text-white font-medium text-sm">
+              <i class="fas fa-exclamation-triangle mr-2"></i>Add to All Users
+            </button>
+          </div>
+        </div>
+
+        <!-- System Maintenance -->
+        <div class="border border-gray-600 rounded-lg p-4">
+          <h3 class="font-semibold mb-4 text-sm sm:text-base">System Maintenance</h3>
+          <div class="space-y-3">
+            <button id="backup-data-btn" class="btn-success w-full py-3 rounded-lg text-white font-medium text-sm">
+              <i class="fas fa-download mr-2"></i>Export User Data
+            </button>
+            <button id="clear-transactions-btn"
+              class="btn-danger w-full py-3 rounded-lg text-white font-medium text-sm">
+              <i class="fas fa-trash mr-2"></i>Clear All Transactions
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Edit Modal -->
+  <div id="user-edit-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-2 sm:p-4">
+      <div class="modal-content admin-card rounded-xl p-4 sm:p-6 w-full max-w-4xl max-h-[95vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 class="text-lg sm:text-xl font-bold">Edit User</h3>
+          <button id="close-modal" class="text-gray-400 hover:text-white p-2">
+            <i class="fas fa-times text-lg sm:text-xl"></i>
+          </button>
+        </div>
+
+        <div id="modal-content">
+          <!-- User edit form will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+<script type="module">
+    // ==========================================
+    // FINAL ROBUST ADMIN SCRIPT (Fixes + Features)
+    // ==========================================
+    
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        getDocs,
+        doc,
+        getDoc,
+        updateDoc,
+        query,
+        where,
+        serverTimestamp,
+        writeBatch,
+        addDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD6enbTO-nNYVyrNLRP-Av6ghguL3--Nvw",
+        authDomain: "safvacut-web-wallet.firebaseapp.com",
+        projectId: "safvacut-web-wallet",
+        storageBucket: "safvacut-web-wallet.appspot.com",
+        messagingSenderId: "976916444641",
+        appId: "1:976916444641:web:4c6a6ad09c43a7ccda0ea0",
+        measurementId: "G-0QCL2TQCB6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db; // Debugging
+
+    // State
+    let allUsers = [];
+    let currentEditingUser = null;
+    const CRYPTO_PRICES = { BTC: 45000, ETH: 2800, BNB: 300, USDT: 1, TRC20: 1, ADA: 0.5 };
+
+    // ---------------------------------------------------------
+    // 1. AUTHENTICATION & INIT
+    // ---------------------------------------------------------
+    function checkAdminAuth() {
+        const adminSession = localStorage.getItem('safvacut_admin_session');
+        const sessionTime = localStorage.getItem('safvacut_admin_time');
+        
+        if (!adminSession || !sessionTime || (Date.now() - parseInt(sessionTime) > 3600000)) {
+            logout();
+            return false;
+        }
+        document.getElementById('admin-username').textContent = localStorage.getItem('safvacut_admin_user') || 'Admin';
+        return true;
+    }
+
+    function logout() {
+        localStorage.removeItem('safvacut_admin_session');
+        localStorage.removeItem('safvacut_admin_time');
+        localStorage.removeItem('safvacut_admin_user');
+        window.location.href = 'admin_login.html';
+    }
+
+    // ---------------------------------------------------------
+    // 2. HELPERS (Date Fixes)
+    // ---------------------------------------------------------
+    function parseFirestoreDate(timestamp) {
+        if (!timestamp) return new Date(); 
+        if (timestamp.seconds) return new Date(timestamp.seconds * 1000);
+        if (typeof timestamp.toDate === 'function') return timestamp.toDate();
+        return new Date(timestamp);
+    }
+
+    // ---------------------------------------------------------
+    // 3. MAIN DATA LOADING
+    // ---------------------------------------------------------
+    async function loadUsers() {
+        try {
+            console.log('Fetching users...');
+            const usersRef = collection(db, "users");
+            const snapshot = await getDocs(usersRef);
+
+            allUsers = [];
+            snapshot.forEach(doc => {
+                allUsers.push({ id: doc.id, ...doc.data() });
+            });
+
+            displayUserResults(allUsers);
+            updateDashboardStats(allUsers);
+            return allUsers;
+        } catch (error) {
+            console.error('Error loading users:', error);
+            Swal.fire('Error', 'Failed to load users', 'error');
+        }
+    }
+
+    async function loadPendingTransactions() {
+        const container = document.getElementById('pending-transactions-list');
+        const countBadge = document.getElementById('pending-count');
+        
+        try {
+            if(container) container.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+            if(allUsers.length === 0) await loadUsers();
+
+            const pendingTx = [];
+            allUsers.forEach(user => {
+                if (user.walletData && Array.isArray(user.walletData.transactions)) {
+                    user.walletData.transactions.forEach(tx => {
+                        if (tx.status === 'pending') {
+                            pendingTx.push({
+                                ...tx,
+                                _parsedDate: parseFirestoreDate(tx.timestamp),
+                                userId: user.id,
+                                userName: user.displayName || 'Unknown',
+                                userEmail: user.email,
+                                uniqueId: user.uniqueId
+                            });
+                        }
+                    });
+                }
+            });
+
+            // SORT: Newest first
+            pendingTx.sort((a, b) => b._parsedDate - a._parsedDate);
+
+            if (countBadge) countBadge.textContent = pendingTx.length;
+            if (container) renderPendingTransactions(pendingTx, container);
+
+        } catch (error) {
+            console.error("Pending TX Error:", error);
+            if(container) container.innerHTML = `<div class="text-red-400 text-center">Error: ${error.message}</div>`;
+        }
+    }
+
+    function renderPendingTransactions(transactions, container) {
+        if (transactions.length === 0) {
+            container.innerHTML = `<div class="text-center py-8 text-gray-400"><i class="fas fa-check-circle text-3xl mb-2 text-green-500"></i><p>No pending transactions</p></div>`;
+            return;
+        }
+
+        container.innerHTML = transactions.map(tx => {
+            const dateStr = tx._parsedDate.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return `
+            <div class="admin-card rounded-lg p-4 border-l-4 border-yellow-500 bg-yellow-500 bg-opacity-5 mb-3">
+                <div class="flex flex-col md:flex-row justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="bg-yellow-500 text-black text-xs px-2 py-1 rounded font-bold">PENDING</span>
+                            <span class="text-gray-400 text-sm">${dateStr}</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                                <div class="font-bold text-lg text-white">${tx.type.toUpperCase()}</div>
+                                <div class="text-xl text-orange-500 font-bold">${parseFloat(tx.amount).toFixed(6)} ${tx.asset}</div>
+                            </div>
+                            <div class="text-sm text-gray-300 bg-black bg-opacity-20 p-2 rounded">
+                                <div>User: ${tx.userEmail}</div>
+                                <div>ID: <span class="font-mono">${tx.uniqueId}</span></div>
+                                <div class="truncate" title="${tx.recipientAddress}">To: ${tx.recipientAddress || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-row md:flex-col justify-center gap-2">
+                        <button onclick="approveTransaction('${tx.userId}', '${tx.id}')" class="btn-success px-4 py-2 rounded text-white text-sm">Approve</button>
+                        <button onclick="rejectTransaction('${tx.userId}', '${tx.id}')" class="btn-danger px-4 py-2 rounded text-white text-sm">Reject</button>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    // ---------------------------------------------------------
+    // 4. USER EDIT & BALANCE MANAGEMENT (RESTORED)
+    // ---------------------------------------------------------
+    
+    // Triggered by the "Edit" button in the user list
+    window.editUser = async function(userId) {
+        try {
+            const userDoc = await getDoc(doc(db, "users", userId));
+            if (!userDoc.exists()) {
+                Swal.fire('Error', 'User not found', 'error');
+                return;
+            }
+            currentEditingUser = { id: userId, ...userDoc.data() };
+            showUserEditModal(currentEditingUser);
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Could not load user details', 'error');
+        }
+    };
+
+    function showUserEditModal(user) {
+        const modal = document.getElementById('user-edit-modal');
+        const content = document.getElementById('modal-content');
+        const walletData = user.walletData || { balances: {}, transactions: [] };
+        const balances = walletData.balances || {};
+        const allAssets = ['BTC', 'ETH', 'BNB', 'USDT', 'TRC20', 'ADA'];
+
+        content.innerHTML = `
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-bold mb-3 border-b border-gray-700 pb-2">User Details</h4>
+                    <div class="space-y-3">
+                        <input type="text" id="edit-name" value="${user.displayName || ''}" class="input-admin w-full p-2 rounded" placeholder="Display Name">
+                        <input type="text" id="edit-email" value="${user.email || ''}" class="input-admin w-full p-2 rounded bg-gray-700" readonly>
+                        <input type="text" id="edit-uid" value="${user.uniqueId || ''}" class="input-admin w-full p-2 rounded bg-gray-700" readonly>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-3 border-b border-gray-700 pb-2">Wallet Balances</h4>
+                    <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                        ${allAssets.map(asset => `
+                            <div class="flex items-center gap-2">
+                                <label class="w-16 text-sm font-bold">${asset}</label>
+                                <input type="number" id="balance-${asset}" value="${balances[asset] || 0}" step="0.00000001" class="input-admin flex-1 p-2 rounded text-right">
+                                <button onclick="addToBalance('${asset}')" class="bg-orange-500 hover:bg-orange-600 text-white p-2 rounded"><i class="fas fa-plus"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end gap-3 border-t border-gray-700 pt-4">
+                <button id="close-edit-modal" class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-500">Cancel</button>
+                <button id="save-user-btn" class="px-6 py-2 btn-admin rounded font-bold">Save Changes</button>
+            </div>
+        `;
+
+        modal.classList.remove('hidden');
+
+        // Event Listeners for Modal
+        document.getElementById('close-edit-modal').onclick = () => modal.classList.add('hidden');
+        document.getElementById('save-user-btn').onclick = saveUserChanges;
+    }
+
+    // Helper to Add/Subtract balance via prompt
+    window.addToBalance = async function(asset) {
+        const { value: amount } = await Swal.fire({
+            title: `Adjust ${asset}`,
+            text: "Enter amount to add (or negative to subtract)",
+            input: 'number',
+            inputAttributes: { step: '0.00000001' },
+            showCancelButton: true,
+            confirmButtonColor: '#f7931a'
+        });
+
+        if (amount) {
+            const input = document.getElementById(`balance-${asset}`);
+            const current = parseFloat(input.value) || 0;
+            input.value = (current + parseFloat(amount)).toFixed(8);
+        }
+    };
+
+    async function saveUserChanges() {
+        try {
+            const btn = document.getElementById('save-user-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            // 1. Capture New Data
+            const newName = document.getElementById('edit-name').value;
+            const newBalances = {};
+            ['BTC', 'ETH', 'BNB', 'USDT', 'TRC20', 'ADA'].forEach(asset => {
+                const el = document.getElementById(`balance-${asset}`);
+                newBalances[asset] = el ? parseFloat(el.value) : 0;
+            });
+
+            // 2. Prepare Update
+            const updatedWalletData = {
+                ...currentEditingUser.walletData,
+                balances: newBalances
+            };
+
+            const userRef = doc(db, "users", currentEditingUser.id);
+            await updateDoc(userRef, {
+                displayName: newName,
+                walletData: updatedWalletData,
+                updatedAt: serverTimestamp()
+            });
+
+            // 3. Clean up
+            document.getElementById('user-edit-modal').classList.add('hidden');
+            Swal.fire('Success', 'User updated successfully', 'success');
+            loadUsers(); // Refresh list
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
+
+    // ---------------------------------------------------------
+    // 5. TRANSACTION ACTIONS (APPROVE/REJECT)
+    // ---------------------------------------------------------
+    window.approveTransaction = async function(userId, txId) {
+        try {
+            const confirm = await Swal.fire({
+                title: 'Approve?', text: 'Mark as completed?', icon: 'question',
+                showCancelButton: true, confirmButtonColor: '#10b981'
+            });
+            if (!confirm.isConfirmed) return;
+
+            const userRef = doc(db, "users", userId);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.data();
+            const walletData = userData.walletData;
+            
+            const txIndex = walletData.transactions.findIndex(t => t.id === txId);
+            if (txIndex === -1) throw new Error("Transaction not found");
+
+            walletData.transactions[txIndex].status = 'completed';
+            walletData.transactions[txIndex].approvedAt = new Date().toISOString();
+
+            await updateDoc(userRef, { walletData });
+            Swal.fire('Approved', 'Transaction completed', 'success');
+            loadPendingTransactions();
+        } catch (e) { Swal.fire('Error', e.message, 'error'); }
+    };
+
+    window.rejectTransaction = async function(userId, txId) {
+        try {
+            const confirm = await Swal.fire({
+                title: 'Reject?', text: 'Mark as failed?', icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#ef4444'
+            });
+            if (!confirm.isConfirmed) return;
+
+            const userRef = doc(db, "users", userId);
+            const userSnap = await getDoc(userRef);
+            const userData = userSnap.data();
+            const walletData = userData.walletData;
+            const txIndex = walletData.transactions.findIndex(t => t.id === txId);
+
+            walletData.transactions[txIndex].status = 'failed';
+            await updateDoc(userRef, { walletData });
+            Swal.fire('Rejected', 'Transaction marked as failed', 'success');
+            loadPendingTransactions();
+        } catch (e) { Swal.fire('Error', e.message, 'error'); }
+    };
+
+    // ---------------------------------------------------------
+    // 6. UI & STATS
+    // ---------------------------------------------------------
+    function updateDashboardStats(users) {
+        let totalBal = 0;
+        let totalTx = 0;
+        users.forEach(u => {
+            if(u.walletData) {
+                totalTx += (u.walletData.transactions || []).length;
+                const bals = u.walletData.balances || {};
+                Object.keys(bals).forEach(asset => {
+                    totalBal += (bals[asset] || 0) * (CRYPTO_PRICES[asset] || 0);
+                });
+            }
+        });
+        if(document.getElementById('total-users')) document.getElementById('total-users').textContent = users.length;
+        if(document.getElementById('total-transactions')) document.getElementById('total-transactions').textContent = totalTx;
+        if(document.getElementById('total-balance')) document.getElementById('total-balance').textContent = '$' + totalBal.toLocaleString();
+    }
+
+    function displayUserResults(users) {
+        const container = document.getElementById('user-results');
+        if(!container) return;
+        if(users.length === 0) {
+            container.innerHTML = '<div class="text-center text-gray-500">No users found</div>';
+            return;
+        }
+        container.innerHTML = users.map(u => `
+            <div class="admin-card p-3 rounded mb-2 flex justify-between items-center">
+                <div>
+                    <div class="font-bold">${u.displayName || 'User'}</div>
+                    <div class="text-xs text-gray-400">${u.email}</div>
+                    <div class="text-xs text-orange-500 font-mono">${u.uniqueId || 'NO ID'}</div>
+                </div>
+                <button class="btn-admin px-3 py-1 rounded text-sm" onclick="editUser('${u.id}')">Edit</button>
+            </div>
+        `).join('');
+    }
+
+    // ---------------------------------------------------------
+    // 7. INIT
+    // ---------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', () => {
+        if(checkAdminAuth()) {
+            loadUsers();
+            loadPendingTransactions();
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            document.getElementById('refresh-pending-btn').addEventListener('click', loadPendingTransactions);
+            document.getElementById('refresh-stats-btn').addEventListener('click', () => loadUsers());
+            // Setup Search
+            document.getElementById('search-user-btn').addEventListener('click', () => {
+                const email = document.getElementById('search-email').value.toLowerCase();
+                const filtered = allUsers.filter(u => u.email.toLowerCase().includes(email));
+                displayUserResults(filtered);
+            });
+        }
+    });
+</script>
+</body>
+
+</html>

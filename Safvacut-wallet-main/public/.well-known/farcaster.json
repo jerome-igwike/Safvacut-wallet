@@ -1,0 +1,15 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjkxNTIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMmVmNzkwRGQ3OTkzQTM1ZkQ4NDdDMDUzRURkQUU5NDBEMDU1NTk2In0",
+    "payload": "eyJkb21haW4iOiJzYWZ2Y3V0LmNvbSJ9",
+    "signature": "PLACEHOLDER_SIGNATURE_FROM_BASE_DEV_PORTAL"
+  },
+  "version": "1",
+  "name": "Safvcut",
+  "homeUrl": "https://safvcut.com",
+  "iconUrl": "https://safvcut.com/icon-1024x1024.png",
+  "splashImageUrl": "https://safvcut.com/splash.png",
+  "splashBackgroundColor": "#0052FF",
+  "primaryCategory": "finance",
+  "tags": ["crypto", "payments", "escrow", "base"]
+}
